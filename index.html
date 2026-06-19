@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HELM — Construction Scheduling</title>
+  <meta name="description" content="HELM connects your internal team, subcontractors, and clients in one live schedule. No more PDF exports. No more 'where are we?' calls." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.30.0/dist/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --g:       #0F6E56;
+      --g-mid:   #1D9E75;
+      --g-light: #5DCAA5;
+      --g-pale:  #E1F5EE;
+      --g-dim:   rgba(29,158,117,0.10);
+      --ink:     #111C18;
+      --ink2:    #3A4A44;
+      --muted:   #6B7E78;
+      --muted2:  #9BADA7;
+      --border:  #DDE6E2;
+      --surface: #F5FAF8;
+      --white:   #FFFFFF;
+      --r:       12px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #fff;
+      color: var(--ink);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 64px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--ink); }
+    .nav-logo-mark {
+      width: 32px; height: 32px; background: var(--g-mid); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .nav-logo-mark svg { width: 17px; height: 17px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; }
+    .nav-wordmark { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a { font-size: 14px; color: var(--muted); text-decoration: none; transition: color .15s; }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-right { display: flex; gap: 10px; align-items: center; }
+    .btn-outline {
+      padding: 8px 18px; border-radius: 8px; font-size: 14px;
+      border: 1px solid var(--border); background: #fff; color: var(--ink2); cursor: pointer;
+      font-family: inherit; transition: border-color .15s;
+    }
+    .btn-outline:hover { border-color: var(--muted2); }
+    .btn-green {
+      padding: 8px 18px; border-radius: 8px; font-size: 14px;
+      background: var(--g-mid); color: #fff; border: none; cursor: pointer;
+      font-weight: 600; font-family: inherit; transition: background .15s;
+    }
+    .btn-green:hover { background: var(--g); }
+
+    /* ── HERO ── */
+    .hero { padding: 88px 48px 0; text-align: center; background: #fff; overflow: hidden; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--g-pale); border-radius: 20px;
+      padding: 5px 14px; font-size: 12px; font-weight: 600;
+      color: var(--g); letter-spacing: 0.3px; margin-bottom: 24px;
+    }
+    .hero-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--g-mid); }
+    .hero h1 {
+      font-size: 54px; font-weight: 700; letter-spacing: -2.2px; line-height: 1.07;
+      color: var(--ink); max-width: 700px; margin: 0 auto 20px;
+    }
+    .hero h1 em { font-style: normal; color: var(--g-mid); }
+    .hero-sub {
+      font-size: 18px; color: var(--muted); max-width: 520px;
+      margin: 0 auto 36px; line-height: 1.65;
+    }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; margin-bottom: 56px; flex-wrap: wrap; }
+    .hero-cta {
+      padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;
+      background: var(--g-mid); color: #fff; border: none; cursor: pointer;
+      font-family: inherit; transition: background .15s;
+    }
+    .hero-cta:hover { background: var(--g); }
+    .hero-ghost {
+      padding: 14px 24px; border-radius: 10px; font-size: 15px;
+      background: #fff; color: var(--ink2); border: 1px solid var(--border); cursor: pointer;
+      font-family: inherit; transition: border-color .15s;
+    }
+    .hero-ghost:hover { border-color: var(--muted2); }
+
+    /* ── HERO SCREENSHOT ── */
+    .hero-screen {
+      margin: 0 auto; max-width: 900px;
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 16px 16px 0 0; overflow: hidden;
+      box-shadow: 0 -4px 48px rgba(0,0,0,0.07), 0 0 0 1px var(--border);
+    }
+    .screen-bar {
+      background: var(--surface); padding: 11px 16px;
+      display: flex; align-items: center; gap: 7px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .screen-title { margin-left: 10px; font-size: 12px; color: var(--muted); }
+    .screen-badge {
+      margin-left: 8px; font-size: 10px; background: var(--g-pale); color: var(--g);
+      padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    }
+    .screen-body { display: flex; min-height: 290px; }
+    .screen-sidebar {
+      width: 196px; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 12px 0; flex-shrink: 0;
+    }
+    .s-nav {
+      padding: 7px 14px; font-size: 12px; color: var(--muted);
+      display: flex; align-items: center; gap: 7px; cursor: default;
+    }
+    .s-nav.active {
+      color: var(--g); background: var(--g-pale); font-weight: 600;
+      border-right: 2px solid var(--g-mid);
+    }
+    .s-nav i { font-size: 14px; }
+    .s-section { padding: 14px 14px 4px; font-size: 9px; color: var(--muted2); letter-spacing: 1px; }
+    .screen-main { flex: 1; padding: 18px 22px; }
+    .screen-hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .screen-hd-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+    .filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-pill {
+      font-size: 10px; padding: 3px 9px; border-radius: 6px;
+      background: var(--surface); border: 1px solid var(--border); color: var(--muted);
+    }
+    .g-row { display: flex; align-items: center; height: 30px; border-bottom: 1px solid var(--border); }
+    .g-label { width: 130px; font-size: 11px; color: var(--muted); flex-shrink: 0; }
+    .g-label.ph { color: var(--ink2); font-weight: 700; }
+    .g-track { flex: 1; position: relative; height: 18px; }
+    .g-bar { position: absolute; height: 12px; top: 3px; border-radius: 4px; }
+    .g-bar.done     { background: #9FE1CB; }
+    .g-bar.active   { background: var(--g-mid); }
+    .g-bar.upcoming { background: var(--border); }
+    .g-bar.ext      { background: transparent; border: 1.5px dashed var(--g-mid); }
+    .screen-note {
+      margin-top: 14px; display: inline-flex; align-items: center; gap: 6px;
+      background: var(--g-pale); border-radius: 8px; padding: 7px 12px;
+      font-size: 11px; color: var(--g); font-weight: 600;
+    }
+    .screen-note i { font-size: 13px; }
+
+    /* ── LOGOS ── */
+    .logos {
+      padding: 32px 48px;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: var(--surface); text-align: center;
+    }
+    .logos-label { font-size: 11px; color: var(--muted2); letter-spacing: 1px; margin-bottom: 18px; font-weight: 600; }
+    .logos-row { display: flex; justify-content: center; gap: 44px; flex-wrap: wrap; }
+    .logo-name { font-size: 13px; color: var(--muted2); font-weight: 600; }
+
+    /* ── STATS ── */
+    .stats { display: flex; border-bottom: 1px solid var(--border); }
+    .stat { flex: 1; padding: 32px 24px; text-align: center; border-right: 1px solid var(--border); }
+    .stat:last-child { border-right: none; }
+    .stat-n { font-size: 36px; font-weight: 700; letter-spacing: -1.2px; color: var(--g); }
+    .stat-l { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* ── SECTIONS ── */
+    .sec { padding: 88px 48px; }
+    .sec.gray { background: var(--surface); }
+    .eyebrow { font-size: 11px; color: var(--g); font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; }
+    .sec h2 {
+      font-size: 38px; font-weight: 700; letter-spacing: -1.4px; line-height: 1.13;
+      max-width: 600px; color: var(--ink); margin-bottom: 14px;
+    }
+    .sec-sub { font-size: 17px; color: var(--muted); max-width: 520px; line-height: 1.65; margin-bottom: 52px; }
+
+    /* ── FEATURES GRID ── */
+    .feat-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+    }
+    .feat-card { background: #fff; padding: 30px 26px; }
+    .feat-icon {
+      width: 44px; height: 44px; border-radius: 10px; background: var(--g-pale);
+      display: flex; align-items: center; justify-content: center; margin-bottom: 18px;
+    }
+    .feat-icon i { font-size: 22px; color: var(--g); }
+    .feat-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .feat-desc { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+    /* ── HOW IT WORKS ── */
+    .how-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start; }
+    .how-steps { display: flex; flex-direction: column; gap: 30px; }
+    .how-step { display: flex; gap: 14px; }
+    .step-num {
+      width: 30px; height: 30px; border-radius: 50%; background: var(--g-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--g); flex-shrink: 0; margin-top: 2px;
+    }
+    .step-title { font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .step-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+    .portal-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .portal-header {
+      background: var(--surface); padding: 14px 18px;
+      border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;
+    }
+    .portal-av {
+      width: 30px; height: 30px; border-radius: 50%; background: var(--g-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: var(--g); flex-shrink: 0;
+    }
+    .portal-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .portal-role { font-size: 11px; color: var(--muted); }
+    .portal-body { padding: 18px; }
+    .ms-label { font-size: 10px; color: var(--muted2); letter-spacing: 0.8px; margin-bottom: 12px; font-weight: 600; }
+    .ms-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-radius: 8px; background: var(--surface); margin-bottom: 8px;
+    }
+    .ms-left { display: flex; align-items: center; gap: 8px; }
+    .ms-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .ms-name { font-size: 12px; font-weight: 600; color: var(--ink2); }
+    .ms-date { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .ms-badge { font-size: 10px; padding: 3px 9px; border-radius: 6px; font-weight: 600; white-space: nowrap; }
+    .b-approved { background: var(--g-pale); color: var(--g); }
+    .b-pending   { background: #FAEEDA; color: #854F0B; }
+    .b-upcoming  { background: #F1EFE8; color: var(--muted); }
+    .portal-cta {
+      width: 100%; margin-top: 14px; padding: 11px;
+      border-radius: 9px; background: var(--g-mid); color: #fff;
+      border: none; font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: inherit; transition: background .15s;
+    }
+    .portal-cta:hover { background: var(--g); }
+
+    /* ── TABS ── */
+    .tabs-nav {
+      display: flex; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 32px;
+    }
+    .t-btn {
+      flex: 1; padding: 12px 12px; font-size: 13px; color: var(--muted);
+      background: transparent; border: none; cursor: pointer;
+      border-right: 1px solid var(--border); font-weight: 600;
+      font-family: inherit; transition: background .15s, color .15s;
+    }
+    .t-btn:last-child { border-right: none; }
+    .t-btn.on { background: #fff; color: var(--g); }
+    .t-panel { display: none; }
+    .t-panel.on { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .t-features { display: flex; flex-direction: column; gap: 24px; }
+    .t-feat { display: flex; gap: 14px; }
+    .t-icon {
+      width: 38px; height: 38px; border-radius: 9px; background: var(--g-pale);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .t-icon i { font-size: 18px; color: var(--g); }
+    .t-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .t-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .t-mock { background: #fff; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .t-mock-hd {
+      background: var(--surface); padding: 12px 16px;
+      font-size: 12px; font-weight: 700; color: var(--ink2); border-bottom: 1px solid var(--border);
+    }
+    .t-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+    }
+    .t-row:last-child { border-bottom: none; }
+    .t-row-name { font-size: 13px; font-weight: 600; color: var(--ink2); }
+    .t-row-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .tbadge { font-size: 10px; padding: 3px 9px; border-radius: 6px; font-weight: 600; }
+    .tb-green { background: var(--g-pale); color: var(--g); }
+    .tb-amber { background: #FAEEDA; color: #854F0B; }
+    .tb-gray  { background: #F1EFE8; color: var(--muted); }
+
+    /* ── TESTIMONIALS ── */
+    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 44px; }
+    .testi-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 14px; padding: 26px;
+    }
+    .testi-q { font-size: 14px; color: var(--ink2); line-height: 1.72; margin-bottom: 22px; }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .testi-av {
+      width: 34px; height: 34px; border-radius: 50%; background: var(--g-pale);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--g); flex-shrink: 0;
+    }
+    .testi-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .testi-role { font-size: 11px; color: var(--muted); }
+
+    /* ── PRICING ── */
+    .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 52px; }
+    .price-card {
+      background: #fff; border: 1px solid var(--border);
+      border-radius: 16px; padding: 30px 26px;
+    }
+    .price-card.feat { border: 2px solid var(--g-mid); }
+    .price-badge {
+      display: inline-block; font-size: 10px; background: var(--g-pale); color: var(--g);
+      padding: 3px 10px; border-radius: 10px; font-weight: 700; margin-bottom: 12px;
+    }
+    .price-name { font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 5px; }
+    .price-desc { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.55; }
+    .price-amount { font-size: 40px; font-weight: 700; letter-spacing: -1.5px; color: var(--ink); }
+    .price-per { font-size: 13px; color: var(--muted); }
+    .price-divider { border: none; border-top: 1px solid var(--border); margin: 22px 0; }
+    .price-feature { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink2); margin-bottom: 11px; }
+    .price-feature i { font-size: 14px; color: var(--g-mid); flex-shrink: 0; }
+    .price-btn {
+      width: 100%; padding: 12px; border-radius: 9px; font-size: 14px; font-weight: 600;
+      cursor: pointer; margin-top: 18px; font-family: inherit; transition: background .15s, border-color .15s;
+    }
+    .price-btn.ghost { background: #fff; border: 1px solid var(--border); color: var(--ink2); }
+    .price-btn.ghost:hover { border-color: var(--muted2); }
+    .price-btn.solid { background: var(--g-mid); border: none; color: #fff; }
+    .price-btn.solid:hover { background: var(--g); }
+
+    /* ── FAQ ── */
+    .faq-wrap { max-width: 700px; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-q {
+      width: 100%; background: none; border: none; text-align: left;
+      padding: 20px 0; font-size: 15px; color: var(--ink); cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      font-weight: 600; font-family: inherit; gap: 16px;
+    }
+    .faq-q i { color: var(--muted); font-size: 17px; transition: transform .2s; flex-shrink: 0; }
+    .faq-a { font-size: 14px; color: var(--muted); line-height: 1.72; padding-bottom: 20px; display: none; }
+    .faq-item.open .faq-a { display: block; }
+    .faq-item.open .faq-q i { transform: rotate(180deg); }
+
+    /* ── CTA ── */
+    .cta-sec { padding: 100px 48px; background: var(--g); text-align: center; }
+    .cta-sec h2 {
+      font-size: 44px; font-weight: 700; letter-spacing: -1.5px; line-height: 1.13;
+      color: #fff; max-width: 620px; margin: 0 auto 16px;
+    }
+    .cta-sec p {
+      font-size: 17px; color: rgba(255,255,255,0.72);
+      max-width: 480px; margin: 0 auto 36px; line-height: 1.6;
+    }
+    .cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .cta-white {
+      padding: 14px 32px; border-radius: 10px; background: #fff; color: var(--g);
+      border: none; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+    }
+    .cta-white:hover { background: #f0fdf8; }
+    .cta-outline-w {
+      padding: 14px 24px; border-radius: 10px; background: transparent; color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.4); font-size: 15px; cursor: pointer;
+      font-family: inherit; transition: background .15s;
+    }
+    .cta-outline-w:hover { background: rgba(255,255,255,0.1); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 38px 48px; display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .foot-logo { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 700; color: var(--ink); }
+    .foot-logo-mark {
+      width: 24px; height: 24px; background: var(--g-mid); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .foot-logo-mark svg { width: 13px; height: 13px; fill: none; stroke: #fff; stroke-width: 2.5; stroke-linecap: round; }
+    .foot-links { display: flex; gap: 24px; }
+    .foot-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .15s; }
+    .foot-links a:hover { color: var(--ink); }
+    .foot-copy { font-size: 12px; color: var(--muted2); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 60px 24px 0; }
+      .hero h1 { font-size: 38px; }
+      .logos, .sec { padding: 56px 24px; }
+      .stats { flex-wrap: wrap; }
+      .stat { flex: 1 1 50%; border-bottom: 1px solid var(--border); }
+      .feat-grid { grid-template-columns: 1fr 1fr; }
+      .how-grid, .t-panel.on, .testi-grid, .price-grid { grid-template-columns: 1fr; }
+      .cta-sec { padding: 72px 24px; }
+      .cta-sec h2 { font-size: 32px; }
+      footer { padding: 28px 24px; flex-direction: column; align-items: flex-start; gap: 20px; }
+    }
+    @media (max-width: 560px) {
+      .feat-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 32px; letter-spacing: -1px; }
+      .sec h2 { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-mark">
+        <svg viewBox="0 0 17 17"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="8.5" y1="3" x2="8.5" y2="8.5"/><line x1="8.5" y1="8.5" x2="12" y2="10.5"/></svg>
+      </div>
+      <span class="nav-wordmark">HELM</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Product</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn-outline">Log in</button>
+      <button class="btn-green">Book a demo</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">Construction scheduling · Built for Canada</div>
+    <h1>Every stakeholder,<br><em>on the same schedule.</em></h1>
+    <p class="hero-sub">HELM connects your internal team, subcontractors, and clients in one live schedule. No more PDF exports. No more "where are we?" calls.</p>
+    <div class="hero-btns">
+      <button class="hero-cta">Start free — 14 days, no card</button>
+      <button class="hero-ghost">See how it works →</button>
+    </div>
+
+    <div class="hero-screen">
+      <div class="screen-bar">
+        <div class="dot" style="background:#FF5F57;"></div>
+        <div class="dot" style="background:#FEBC2E;"></div>
+        <div class="dot" style="background:#28C840;"></div>
+        <span class="screen-title">Riverside Townhomes · Phase 2</span>
+        <span class="screen-badge">● On Track</span>
+      </div>
+      <div class="screen-body">
+        <div class="screen-sidebar">
+          <div class="s-nav"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+          <div class="s-nav active"><i class="ti ti-calendar"></i>Schedule</div>
+          <div class="s-nav"><i class="ti ti-users"></i>Workers</div>
+          <div class="s-nav"><i class="ti ti-building-store"></i>Vendors</div>
+          <div class="s-nav"><i class="ti ti-pencil"></i>Drawings</div>
+          <div class="s-nav"><i class="ti ti-package"></i>BOM</div>
+          <div class="s-section">EXTERNAL ACCESS</div>
+          <div class="s-nav" style="color:var(--g);font-size:11px;font-weight:600;"><i class="ti ti-link" style="color:var(--g);"></i>Client Portal</div>
+          <div class="s-nav" style="font-size:11px;"><i class="ti ti-hard-hat"></i>Sub Portal</div>
+        </div>
+        <div class="screen-main">
+          <div class="screen-hd">
+            <span class="screen-hd-title">Schedule · Week of Jun 18</span>
+          </div>
+          <div class="filters">
+            <span class="filter-pill">Phase: All ▾</span>
+            <span class="filter-pill">Vendor: All ▾</span>
+            <span class="filter-pill">Worker: All ▾</span>
+            <span class="filter-pill">Status: All ▾</span>
+            <span class="filter-pill">◇ Milestone</span>
+          </div>
+          <div>
+            <div class="g-row"><div class="g-label ph">Foundation</div><div class="g-track"><div class="g-bar done" style="left:0%;width:28%;"></div></div></div>
+            <div class="g-row"><div class="g-label" style="padding-left:14px;font-size:10px;">Concrete pour</div><div class="g-track"><div class="g-bar done" style="left:0%;width:16%;"></div></div></div>
+            <div class="g-row"><div class="g-label ph">Framing</div><div class="g-track"><div class="g-bar active" style="left:25%;width:32%;"></div></div></div>
+            <div class="g-row"><div class="g-label" style="padding-left:14px;font-size:10px;">Apex Framing Ltd</div><div class="g-track"><div class="g-bar ext" style="left:25%;width:22%;"></div></div></div>
+            <div class="g-row"><div class="g-label ph">Electrical</div><div class="g-track"><div class="g-bar upcoming" style="left:52%;width:28%;"></div></div></div>
+            <div class="g-row"><div class="g-label" style="padding-left:14px;font-size:10px;">Brightline Electric</div><div class="g-track"><div class="g-bar ext" style="left:52%;width:20%;"></div></div></div>
+          </div>
+          <div class="screen-note">
+            <i class="ti ti-eye"></i>
+            Client + 3 subs viewing live · No login required
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGOS -->
+  <div class="logos">
+    <div class="logos-label">TRUSTED BY CONSTRUCTION TEAMS ACROSS CANADA</div>
+    <div class="logos-row">
+      <span class="logo-name">Maple Ridge Builders</span>
+      <span class="logo-name">Pacific Trades Co.</span>
+      <span class="logo-name">Summit GC</span>
+      <span class="logo-name">Northway Construction</span>
+      <span class="logo-name">Prairie Build Group</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat"><div class="stat-n">73%</div><div class="stat-l">fewer client update calls</div></div>
+    <div class="stat"><div class="stat-n">4.2h</div><div class="stat-l">saved per PM per week</div></div>
+    <div class="stat"><div class="stat-n">$0</div><div class="stat-l">for external stakeholders, always</div></div>
+    <div class="stat"><div class="stat-n">5 min</div><div class="stat-l">to your first live schedule</div></div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="sec" id="features">
+    <div class="eyebrow">PLATFORM</div>
+    <h2>Everything your project needs. Nothing it doesn't.</h2>
+    <p class="sec-sub">Built specifically for construction and trades teams who coordinate with clients, subs, and inspectors on every job.</p>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-calendar-event"></i></div>
+        <div class="feat-title">Live Gantt schedule</div>
+        <div class="feat-desc">Build timelines with phases, tasks, dependencies, and milestones. Updates push to everyone the moment you make them.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-users-group"></i></div>
+        <div class="feat-title">External stakeholder portal</div>
+        <div class="feat-desc">Clients and subs get a live, link-based view of the schedule. No account. No download. No stale PDF.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-circle-check"></i></div>
+        <div class="feat-title">Milestone approvals</div>
+        <div class="feat-desc">Clients approve key dates directly in their portal. Logged, timestamped, no email chain needed.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-robot"></i></div>
+        <div class="feat-title">AI copilot</div>
+        <div class="feat-desc">"What's delaying Phase 2?" or "Generate a recovery schedule." Answers in seconds, not spreadsheets.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-hard-hat"></i></div>
+        <div class="feat-title">Worker & vendor management</div>
+        <div class="feat-desc">Manage your crew and subs in one place. Assign trades to tasks, track skills, and view capacity across all projects.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon"><i class="ti ti-file-description"></i></div>
+        <div class="feat-title">Drawings & BOM</div>
+        <div class="feat-desc">Upload DXF drawings for AI-powered take-offs. Link materials to schedule tasks and track quantities automatically.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="sec gray" id="how">
+    <div class="eyebrow">HOW IT WORKS</div>
+    <h2>From your desk to the field to your client — live.</h2>
+    <div style="height:44px;"></div>
+    <div class="how-grid">
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="step-num">1</div>
+          <div>
+            <div class="step-title">Build your schedule in minutes</div>
+            <div class="step-desc">Create phases, assign tasks to trades and vendors, set durations and dependencies. Your first schedule takes under 5 minutes.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">2</div>
+          <div>
+            <div class="step-title">Share a live link with clients and subs</div>
+            <div class="step-desc">No login, no PDF. Send a link and your client sees the live schedule in their browser. Subs see only their tasks.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">3</div>
+          <div>
+            <div class="step-title">Everyone stays in sync automatically</div>
+            <div class="step-desc">When a task moves, notifications go out immediately. No more "I didn't know it changed" on site.</div>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">4</div>
+          <div>
+            <div class="step-title">Clients approve milestones from their portal</div>
+            <div class="step-desc">One click. Every approval logged and timestamped. Your dispute protection lives here.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="portal-card">
+        <div class="portal-header">
+          <div class="portal-av">RS</div>
+          <div>
+            <div class="portal-name">Riverside Client Portal</div>
+            <div class="portal-role">Viewing as Rachel S. · Client</div>
+          </div>
+        </div>
+        <div class="portal-body">
+          <div class="ms-label">MILESTONES REQUIRING YOUR REVIEW</div>
+          <div class="ms-row">
+            <div class="ms-left">
+              <div class="ms-dot" style="background:#1D9E75;"></div>
+              <div><div class="ms-name">Foundation complete</div><div class="ms-date">Jun 15, 2026</div></div>
+            </div>
+            <span class="ms-badge b-approved">✓ Approved</span>
+          </div>
+          <div class="ms-row">
+            <div class="ms-left">
+              <div class="ms-dot" style="background:#EF9F27;"></div>
+              <div><div class="ms-name">Framing complete</div><div class="ms-date">Jul 12, 2026</div></div>
+            </div>
+            <span class="ms-badge b-pending">⏳ Awaiting</span>
+          </div>
+          <div class="ms-row">
+            <div class="ms-left">
+              <div class="ms-dot" style="background:#C4C0B8;"></div>
+              <div><div class="ms-name">Rough-in inspection</div><div class="ms-date">Aug 5, 2026</div></div>
+            </div>
+            <span class="ms-badge b-upcoming">Upcoming</span>
+          </div>
+          <div class="ms-row">
+            <div class="ms-left">
+              <div class="ms-dot" style="background:#C4C0B8;"></div>
+              <div><div class="ms-name">Substantial completion</div><div class="ms-date">Oct 18, 2026</div></div>
+            </div>
+            <span class="ms-badge b-upcoming">Upcoming</span>
+          </div>
+          <button class="portal-cta">Approve framing milestone →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOR YOUR TEAM / TABS -->
+  <section class="sec">
+    <div class="eyebrow">FOR YOUR WHOLE TEAM</div>
+    <h2>Built for every role in the project.</h2>
+    <p class="sec-sub">Different views, same live data. Everyone sees exactly what they need — nothing more.</p>
+
+    <div class="tabs-nav">
+      <button class="t-btn on" onclick="switchTab('pm',this)">Project Manager</button>
+      <button class="t-btn" onclick="switchTab('sub',this)">Subcontractors</button>
+      <button class="t-btn" onclick="switchTab('client',this)">Clients</button>
+      <button class="t-btn" onclick="switchTab('field',this)">Field Crew</button>
+    </div>
+
+    <div id="tp-pm" class="t-panel on">
+      <div class="t-features">
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-layout-board"></i></div><div><div class="t-title">Full portfolio view</div><div class="t-desc">All active projects at once. On track, at risk, delayed — at a glance across your entire portfolio.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-adjustments"></i></div><div><div class="t-title">Drag-and-drop scheduling</div><div class="t-desc">Replan in seconds. Drag tasks, update durations, and dependencies cascade automatically.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-robot"></i></div><div><div class="t-title">AI copilot on every project</div><div class="t-desc">"Generate a recovery schedule." "Which trade is most overloaded?" Answers in seconds.</div></div></div>
+      </div>
+      <div class="t-mock">
+        <div class="t-mock-hd">All Projects</div>
+        <div class="t-row"><div><div class="t-row-name">Riverside Townhomes</div><div class="t-row-meta">Toronto · Jul 5 – Oct 18</div></div><span class="tbadge tb-green">On Track</span></div>
+        <div class="t-row"><div><div class="t-row-name">REHBT Commercial</div><div class="t-row-meta">Calgary · Mar 1 – Oct 29</div></div><span class="tbadge tb-green">On Track</span></div>
+        <div class="t-row"><div><div class="t-row-name">Beta Warehouse</div><div class="t-row-meta">Vancouver · Active</div></div><span class="tbadge tb-amber">At Risk</span></div>
+      </div>
+    </div>
+
+    <div id="tp-sub" class="t-panel">
+      <div class="t-features">
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-link"></i></div><div><div class="t-title">No account needed</div><div class="t-desc">Subs get a link and see their tasks in the browser. No software to install, no logins to remember.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-bell"></i></div><div><div class="t-title">Instant change notifications</div><div class="t-desc">When a task moves, affected subs get notified immediately. No more surprises on site.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-pencil"></i></div><div><div class="t-title">Update tasks from the field</div><div class="t-desc">Mark tasks complete or flag delays from a phone. Progress reflects in the GC's schedule instantly.</div></div></div>
+      </div>
+      <div class="t-mock">
+        <div class="t-mock-hd">Apex Framing · Your Tasks</div>
+        <div class="t-row"><div><div class="t-row-name">Framing – Unit A</div><div class="t-row-meta">Starts Jun 25 · 8 days</div></div><span class="tbadge tb-green">In progress</span></div>
+        <div class="t-row"><div><div class="t-row-name">Framing – Unit B</div><div class="t-row-meta">Starts Jul 5 · 6 days</div></div><span class="tbadge tb-gray">Upcoming</span></div>
+        <div class="t-row"><div><div class="t-row-name">Roof rough framing</div><div class="t-row-meta">Starts Jul 14 · 4 days</div></div><span class="tbadge tb-gray">Upcoming</span></div>
+      </div>
+    </div>
+
+    <div id="tp-client" class="t-panel">
+      <div class="t-features">
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-eye"></i></div><div><div class="t-title">Live schedule view</div><div class="t-desc">Clients see the real schedule in real time. No PDF that's already out of date.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-circle-check"></i></div><div><div class="t-title">One-click milestone approvals</div><div class="t-desc">Approve key dates directly in the portal. Logged, timestamped, no email chain needed.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-message"></i></div><div><div class="t-title">Comments on tasks</div><div class="t-desc">Flag questions directly on the task. PMs see it in context, not buried in email.</div></div></div>
+      </div>
+      <div class="t-mock">
+        <div class="t-mock-hd">Your Project · Riverside Ph. 2</div>
+        <div class="t-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+          <div style="font-size:11px;color:var(--muted);">Overall progress</div>
+          <div style="width:100%;height:6px;background:var(--border);border-radius:3px;"><div style="width:38%;height:6px;background:var(--g-mid);border-radius:3px;"></div></div>
+          <div style="font-size:11px;color:var(--muted);">38% complete · On track for Oct 18</div>
+        </div>
+        <div class="t-row"><div class="t-row-name">Foundation</div><span class="tbadge tb-green">✓ Done</span></div>
+        <div class="t-row"><div class="t-row-name">Framing</div><span class="tbadge tb-amber">In progress</span></div>
+        <div class="t-row"><div class="t-row-name">Electrical</div><span class="tbadge tb-gray">Upcoming</span></div>
+      </div>
+    </div>
+
+    <div id="tp-field" class="t-panel">
+      <div class="t-features">
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-device-mobile"></i></div><div><div class="t-title">Mobile-first field view</div><div class="t-desc">Optimized for the job site. Big text, clear tasks, works offline. No laptop needed on the scaffold.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-check"></i></div><div><div class="t-title">Mark complete from site</div><div class="t-desc">Tap to complete. Add a photo. The PM sees it update live before you pocket your phone.</div></div></div>
+        <div class="t-feat"><div class="t-icon"><i class="ti ti-alert-triangle"></i></div><div><div class="t-title">Flag delays instantly</div><div class="t-desc">Spotted a problem? Flag it from the field. PMs get a notification in seconds with full context.</div></div></div>
+      </div>
+      <div class="t-mock" style="padding:40px;text-align:center;">
+        <i class="ti ti-device-mobile" style="font-size:48px;color:var(--muted2);"></i>
+        <div style="font-size:13px;color:var(--muted);margin-top:14px;line-height:1.65;">Mobile-first field experience<br>available on iOS and Android</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="sec gray">
+    <div class="eyebrow" style="text-align:center;">WHAT GCS ARE SAYING</div>
+    <h2 style="margin:0 auto;text-align:center;">Real feedback from Canadian contractors.</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <p class="testi-q">"My clients used to call twice a week asking where things stood. Since HELM, they just check the portal. Those calls have basically stopped."</p>
+        <div class="testi-author"><div class="testi-av">MR</div><div><div class="testi-name">Mike R.</div><div class="testi-role">GC · Toronto, ON · 12 active projects</div></div></div>
+      </div>
+      <div class="testi-card">
+        <p class="testi-q">"We were running MS Project and sharing PDFs by email. HELM replaced both in a week. The subcontractor portal alone is worth the subscription."</p>
+        <div class="testi-author"><div class="testi-av">JT</div><div><div class="testi-name">James T.</div><div class="testi-role">PM · Calgary, AB · Residential builder</div></div></div>
+      </div>
+      <div class="testi-card">
+        <p class="testi-q">"I built my first Gantt in 4 minutes. I've been drawing these in Excel for 8 years. HELM should have existed a long time ago."</p>
+        <div class="testi-author"><div class="testi-av">SP</div><div><div class="testi-name">Sandra P.</div><div class="testi-role">Owner · Vancouver, BC · Custom builds</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="sec" id="pricing">
+    <div class="eyebrow">PRICING</div>
+    <h2>Simple pricing. External stakeholders always free.</h2>
+    <p class="sec-sub">No surprise costs when you share your schedule with clients or subs. They're always free, on every plan.</p>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-name">Starter</div>
+        <div class="price-desc">For small teams running a few active projects.</div>
+        <div style="margin-bottom:4px;"><span class="price-amount">$19</span> <span class="price-per">/ seat / month</span></div>
+        <hr class="price-divider">
+        <div class="price-feature"><i class="ti ti-check"></i>Up to 3 active projects</div>
+        <div class="price-feature"><i class="ti ti-check"></i>5 external stakeholders per project</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Gantt schedule + milestones</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Worker & vendor management</div>
+        <button class="price-btn ghost">Start free trial</button>
+      </div>
+      <div class="price-card feat">
+        <div class="price-badge">Most popular</div>
+        <div class="price-name">Professional</div>
+        <div class="price-desc">For growing GCs managing multiple projects and teams.</div>
+        <div style="margin-bottom:4px;"><span class="price-amount">$35</span> <span class="price-per">/ seat / month</span></div>
+        <hr class="price-divider">
+        <div class="price-feature"><i class="ti ti-check"></i>Unlimited projects</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Unlimited external stakeholders</div>
+        <div class="price-feature"><i class="ti ti-check"></i>AI Copilot on every project</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Drawings + BOM management</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Slack & email integrations</div>
+        <button class="price-btn solid">Start free trial</button>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Team</div>
+        <div class="price-desc">For established builders with complex multi-trade schedules.</div>
+        <div style="margin-bottom:4px;"><span class="price-amount">$49</span> <span class="price-per">/ seat / month</span></div>
+        <hr class="price-divider">
+        <div class="price-feature"><i class="ti ti-check"></i>Everything in Professional</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Resource management</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Change order tracking</div>
+        <div class="price-feature"><i class="ti ti-check"></i>CRM + estimating module</div>
+        <div class="price-feature"><i class="ti ti-check"></i>Priority support</div>
+        <button class="price-btn ghost">Contact sales</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec gray" id="faq">
+    <div class="eyebrow">FAQ</div>
+    <h2>Common questions.</h2>
+    <div style="height:30px;"></div>
+    <div class="faq-wrap">
+      <div class="faq-item open">
+        <button class="faq-q" onclick="toggleFaq(this)">Does my client need to create an account? <i class="ti ti-chevron-down"></i></button>
+        <div class="faq-a">No. Clients and subcontractors access their portal through a link you send them. No signup, no download, no password. They open it in any browser and see the live schedule immediately.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">How is HELM different from MS Project or Smartsheet? <i class="ti ti-chevron-down"></i></button>
+        <div class="faq-a">MS Project requires the Microsoft ecosystem and a license for every participant. Smartsheet requires all parties to have accounts. Neither was designed for construction teams sharing schedules externally. HELM is purpose-built for GCs and trades — you're live in 5 minutes, and your client sees it without logging in.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Can subcontractors update their own task status? <i class="ti ti-chevron-down"></i></button>
+        <div class="faq-a">Yes. Subcontractors can mark tasks in progress or complete, and flag delays directly from their portal. Those updates reflect immediately in your schedule view — no back-and-forth texts needed.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is there a free trial? <i class="ti ti-chevron-down"></i></button>
+        <div class="faq-a">Yes. All plans include a 14-day free trial with no credit card required. Build a real project schedule, invite your team, and share your first client portal before paying anything.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What happens when I change a task — do clients get notified? <i class="ti ti-chevron-down"></i></button>
+        <div class="faq-a">Yes. When you move a milestone or update a task that affects an external stakeholder, HELM sends an automatic email notification. Clients always see the latest version of the schedule — never an outdated PDF.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-sec">
+    <h2>Stop sending PDFs.<br>Start sharing live schedules.</h2>
+    <p>Join construction teams across Canada who've replaced MS Project and email with HELM.</p>
+    <div class="cta-btns">
+      <button class="cta-white">Start free — 14 days, no card</button>
+      <button class="cta-outline-w">Book a demo →</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-logo">
+      <div class="foot-logo-mark">
+        <svg viewBox="0 0 13 13"><circle cx="6.5" cy="6.5" r="4"/><line x1="6.5" y1="2.5" x2="6.5" y2="6.5"/><line x1="6.5" y1="6.5" x2="9.5" y2="8"/></svg>
+      </div>
+      HELM
+    </div>
+    <div class="foot-links">
+      <a href="#">Product</a>
+      <a href="#">Pricing</a>
+      <a href="#">Privacy</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="foot-copy">© 2026 HELM · Toronto, Canada</div>
+  </footer>
+
+  <script>
+    function switchTab(id, btn) {
+      document.querySelectorAll('.t-panel').forEach(function(el){ el.classList.remove('on'); });
+      document.querySelectorAll('.t-btn').forEach(function(el){ el.classList.remove('on'); });
+      document.getElementById('tp-' + id).classList.add('on');
+      btn.classList.add('on');
+    }
+    function toggleFaq(btn) {
+      btn.closest('.faq-item').classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
